@@ -2,7 +2,8 @@
 
 namespace GymManagement.Application.Common.Interfaces;
 
-public interface ISubscriptionRepository
+public interface ISubscriptionsRepository
 {
     Task AddSubscriptionAsync(Subscription subscription);
+    Task<Subscription?> GetSubscriptionAsync(Guid subscriptionId);
 }
