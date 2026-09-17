@@ -21,8 +21,15 @@ public class SubscriptionsController : Controller
     {
         var command = new CreateSubscriptionCommand(request.SubscriptionType.ToString(), request.AdminId);
 
-        var adminId = await _mediator.Send(command);
+        var createSubscriptionResult = await _mediator.Send(command);
 
-        return Ok(adminId);
+        if (createSubscriptionResult.IsError)
+        {
+            return Problem();
+        }
+
+        var response = new SubscriptionResponse(createSubscriptionResult.Value, request.SubscriptionType);
+
+        return Ok(response);
     }
 }
