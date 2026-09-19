@@ -1,10 +1,10 @@
-﻿using ErrorOr;
-using GymManagement.Application.Subscriptions.Commands.CreateSubscription;
+﻿using GymManagement.Application.Subscriptions.Commands.CreateSubscription;
 using GymManagement.Application.Subscriptions.Queries.GetSubscription;
 using GymManagement.Application.Subscriptions.Queries.GetSubscriptions;
 using GymManagement.Contracts.Subscriptions;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using DomainSubscriptionType = GymManagement.Domain.SubscriptionType;
 
 namespace GymManagement.Api.Controllers;
 
@@ -22,12 +22,18 @@ public class SubscriptionsController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateSubscription([FromBody] CreateSubscriptionRequest request)
     {
-        var command = new CreateSubscriptionCommand(request.SubscriptionType.ToString());
+        if (DomainSubscriptionType.TryFromName(request.SubscriptionType.ToString(), out var subscriptionType))
+        {
+            return Problem(statusCode: StatusCodes.Status400BadRequest, detail: "Subscription type is invalid");
+        }
+
+        var command = new CreateSubscriptionCommand(subscriptionType, request.AdminId);
 
         var createSubscriptionResult = await _mediator.Send(command);
 
         return createSubscriptionResult.MatchFirst(
-            subscription => Ok(new SubscriptionResponse(subscription.Id, request.SubscriptionType)),
+            subscription => Ok(new SubscriptionResponse(subscription.Id,
+                Enum.Parse<SubscriptionType>(subscription.SubscriptionType.Name))),
             error => Problem()
         );
     }
@@ -41,7 +47,7 @@ public class SubscriptionsController : Controller
 
         return result.MatchFirst(
             subscriptions => Ok(subscriptions.Select(s =>
-                new SubscriptionResponse(s.Id, Enum.Parse<SubscriptionType>(s.SubscriptionType)))),
+                new SubscriptionResponse(s.Id, Enum.Parse<SubscriptionType>(s.SubscriptionType.Name)))),
             error => Problem()
         );
     }
@@ -56,7 +62,7 @@ public class SubscriptionsController : Controller
         return result.MatchFirst(
             subscription =>
                 Ok(new SubscriptionResponse(subscription.Id,
-                    Enum.Parse<SubscriptionType>(subscription.SubscriptionType))),
+                    Enum.Parse<SubscriptionType>(subscription.SubscriptionType.Name))),
             error => Problem()
         );
     }
