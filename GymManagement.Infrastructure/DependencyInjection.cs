@@ -15,6 +15,8 @@ public static class DependencyInjection
     {
         services.AddDbContext<GymManagementDbContext>(options =>
             options.UseSqlServer(config.GetConnectionString("GymManagementConnectionString")));
+        services.AddScoped<IUnitOfWork>(serviceProvider =>
+            serviceProvider.GetRequiredService<GymManagementDbContext>());
         services.AddScoped<ISubscriptionsRepository, SubscriptionsesRepository>();
 
         return services;
