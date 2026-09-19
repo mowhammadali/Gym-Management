@@ -1,4 +1,5 @@
-﻿using GymManagement.Application.Common.Interfaces;
+﻿using System.Reflection;
+using GymManagement.Application.Common.Interfaces;
 using GymManagement.Domain.Subscriptions;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,12 @@ public class GymManagementDbContext : DbContext, IUnitOfWork
 
     public GymManagementDbContext(DbContextOptions<GymManagementDbContext> options) : base(options)
     {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        base.OnModelCreating(modelBuilder);
     }
 
     public async Task CommitChangesAsync()
