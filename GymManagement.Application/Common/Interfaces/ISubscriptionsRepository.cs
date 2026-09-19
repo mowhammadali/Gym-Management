@@ -6,4 +6,5 @@ public interface ISubscriptionsRepository
 {
     Task AddSubscriptionAsync(Subscription subscription);
     Task<Subscription?> GetSubscriptionAsync(Guid subscriptionId);
+    Task<IEnumerable<Subscription>> GetSubscriptionsAsync();
 }

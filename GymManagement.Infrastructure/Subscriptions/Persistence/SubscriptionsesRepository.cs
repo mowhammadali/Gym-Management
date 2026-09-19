@@ -25,4 +25,11 @@ public class SubscriptionsesRepository : ISubscriptionsRepository
     {
         return await _context.Subscriptions.FirstOrDefaultAsync(s => s.Id == subscriptionId);
     }
+
+    public async Task<IEnumerable<Subscription>> GetSubscriptionsAsync()
+    {
+        var subscriptions = await _context.Subscriptions.ToListAsync();
+
+        return subscriptions;
+    }
 }
