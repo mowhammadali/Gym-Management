@@ -21,7 +21,7 @@ public class SubscriptionsController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateSubscription([FromBody] CreateSubscriptionRequest request)
     {
-        var command = new CreateSubscriptionCommand(request.SubscriptionType.ToString(), request.AdminId);
+        var command = new CreateSubscriptionCommand(request.SubscriptionType.ToString());
 
         var createSubscriptionResult = await _mediator.Send(command);
 
